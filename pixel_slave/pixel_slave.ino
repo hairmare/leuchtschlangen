@@ -31,22 +31,22 @@ void setup() {
   pinMode(ADR_PIN6, INPUT_PULLUP);
   // find i2c address based on adress select pin states
   int address = 0;
-  if (digitalRead(ADR_PIN1)) {
+  if (!digitalRead(ADR_PIN1)) {
     address += 1;
   }
-  if (digitalRead(ADR_PIN2)) {
+  if (!digitalRead(ADR_PIN2)) {
     address += 2;
   }
-  if (digitalRead(ADR_PIN3)) {
+  if (!digitalRead(ADR_PIN3)) {
     address += 4;
   }
-  if (digitalRead(ADR_PIN4)) {
+  if (!digitalRead(ADR_PIN4)) {
     address += 8;
   }
-  if (digitalRead(ADR_PIN5)) {
+  if (!digitalRead(ADR_PIN5)) {
     address += 16;
   }
-  if (digitalRead(ADR_PIN6)) {
+  if (!digitalRead(ADR_PIN6)) {
     address += 32;
   }
   // join i2c
@@ -76,7 +76,7 @@ void loop() {
       buttonState = reading;
 
       // only toggle the resultState if the new button state is HIGH
-      if (buttonState == HIGH) {
+      if (buttonState == LOW) {
         resultState = true;
         color = strip.Color(random(255), random(255), random(255));
       } else {
@@ -86,7 +86,7 @@ void loop() {
       }
       // set all the pixels to the new color value on each change:
       for(uint16_t j=0; j < strip.numPixels(); j++) {
-         strip.setPixelColor(j, color);
+        strip.show(); 
       }
     }
   }
