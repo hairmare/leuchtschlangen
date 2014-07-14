@@ -1,19 +1,30 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <!-- Created with Fritzing (http://www.fritzing.org/) -->
-<svg xmlns="http://www.w3.org/2000/svg" width="1.41346in" x="0in" version="1.2" y="0in"  height="1.80969in" viewBox="0 0 101.769 130.298" baseProfile="tiny" xmlns:svg="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="1.39709in" x="0in" version="1.2" y="0in"  height="1.95209in" viewBox="0 0 100.59 140.551" baseProfile="tiny" xmlns:svg="http://www.w3.org/2000/svg">
  <g partID="19671">
   <g id="silkscreen0">
-   <rect width="101.193" x="0.288" y="0.288" fill="none" height="129.722" stroke="black" stroke-width="0.576"/>
+   <rect width="100.014" x="0.288" y="0.288" fill="none" height="139.975" stroke="black" stroke-width="0.576"/>
   </g>
  </g>
  <g partID="19670">
   <g id="board">
-   <rect width="101.193" x="0.288" y="0.288" fill="none" height="129.722" stroke="black" fill-opacity="0.5" id="boardoutline" stroke-width="0.5"/>
+   <rect width="100.014" x="0.288" y="0.288" fill="none" height="139.975" stroke="black" fill-opacity="0.5" id="boardoutline" stroke-width="0.5"/>
   </g>
  </g>
  <g partID="19671">
   <g id="silkscreen0">
-   <rect width="101.193" x="0.288" y="0.288" fill="none" height="129.722" stroke="black" stroke-width="0.576"/>
+   <rect width="100.014" x="0.288" y="0.288" fill="none" height="139.975" stroke="black" stroke-width="0.576"/>
+  </g>
+ </g>
+ <g partID="1580190">
+  <g transform="translate(9.20584,110.338)">
+   <g id="copper0">
+    <g id="copper1">
+     <!-- <rect width="55" x="10" y="15.5" fill="none" height="55" stroke="rgb(255, 191, 0)" stroke-width="20" />  -->
+     <circle fill="white" cx="2.7" cy="3.096" stroke="white" r="1.98" id="connector0pin" stroke-width="2.16"/>
+     <circle fill="white" cx="31.5" cy="3.096" stroke="white" r="1.98" id="connector1pin" stroke-width="2.16"/>
+    </g>
+   </g>
   </g>
  </g>
  <g partID="1517350">
@@ -53,8 +64,8 @@
   </g>
  </g>
  <g partID="1519670">
-  <g transform="translate(69.0662,105.658)">
-   <g transform="matrix(0,1,-1,0,0,0)">
+  <g transform="translate(76.1298,106.673)">
+   <g transform="matrix(1,0,0,1,0,0)">
     <g id="copper0">
      <rect width="4.32" x="5.616" y="4.60063" fill="white" height="4.32" stroke="white" id="square" stroke-width="2.16"/>
      <circle fill="white" cx="7.776" cy="6.76063" stroke="white" id="connector0pin" r="2.16" stroke-width="2.16"/>
