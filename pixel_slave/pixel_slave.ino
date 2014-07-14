@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
 
-#define LED_DATA_PIN 6
+#define LED_DATA_PIN 11
 #define BUTTON_PIN 2
 
 #define ADR_PIN1 3
@@ -11,7 +11,7 @@
 #define ADR_PIN5 8
 #define ADR_PIN6 9
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(24, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(7, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 boolean resultState = false;         // the current state
 int buttonState;             // the current reading from the input pin
@@ -19,9 +19,12 @@ int lastButtonState = LOW;   // the previous reading from the input pin
 long lastDebounceTime = 0;  // the last time the output pin was toggled
 long debounceDelay = 50;    // the debounce time; increase if the output flickers
 
+uint32_t color;
 
 void setup() {
   // activate internal pull up resitors on all button and address select pins
+    strip.begin();
+  
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(ADR_PIN1, INPUT_PULLUP);
   pinMode(ADR_PIN2, INPUT_PULLUP);
@@ -58,8 +61,6 @@ void setup() {
 void loop() {
   // read the state of the switch into a local variable:
   int reading = digitalRead(BUTTON_PIN);
-  // this is where we will store the strips next color:
-  uint32_t color;
 
   // If the switch changed, due to noise or pressing:
   if (reading != lastButtonState) {
@@ -81,12 +82,12 @@ void loop() {
         color = strip.Color(random(255), random(255), random(255));
       } else {
         resultState = false;
-        // @todo assert this is how to turn pixels off
-        color = strip.Color(0, 0, 0);
       }
       // set all the pixels to the new color value on each change:
       for(uint16_t j=0; j < strip.numPixels(); j++) {
-        strip.show(); 
+        
+        strip.setPixelColor(j, color);
+        strip.show();
       }
     }
   }
