@@ -5,7 +5,7 @@ Contains the code running on the Raspberry Pi to trigger stuff when the slaves a
 ## Install
 
 * comment ``blacklist i2c-bcm2708`` in ``/etc/modprobe.d/raspi-blacklist.conf``.
-* add ``i2c-dev`` to ``etc/modules``
+* add ``i2c-dev`` to ``/etc/modules``
 * install tools with ``sudo apt-get install i2c-tools``
 * setup permission for pi user ``sudo adduser pi i2c``
 * test after reboot using ``i2cdetect -y 0``
