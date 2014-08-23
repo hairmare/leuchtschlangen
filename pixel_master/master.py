@@ -1,6 +1,6 @@
 # simple example app, will be expanded to do work after PoC
 
-import smbbus
+import smbus
 import time
 bus = smbus.SMBus(0)
 
