@@ -9,6 +9,7 @@ Contains the code running on the Raspberry Pi to trigger stuff when the slaves a
 * install tools with ``sudo apt-get install i2c-tools``
 * setup permission for pi user ``sudo adduser pi i2c``
 * test after reboot using ``i2cdetect -y 0``
+* install python i2c libs ``sudo apt-get install python-smbus``
 * change address in ``master.py`` and run it to check if output is printed
 
 ## Links
