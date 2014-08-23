@@ -22,9 +22,9 @@ long debounceDelay = 50;    // the debounce time; increase if the output flicker
 uint32_t color;
 
 void setup() {
-  // activate internal pull up resitors on all button and address select pins
-    strip.begin();
+  strip.begin();
   
+  // activate internal pull up resitors on all button and address select pins
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(ADR_PIN1, INPUT_PULLUP);
   pinMode(ADR_PIN2, INPUT_PULLUP);
@@ -32,6 +32,7 @@ void setup() {
   pinMode(ADR_PIN4, INPUT_PULLUP);
   pinMode(ADR_PIN5, INPUT_PULLUP);
   pinMode(ADR_PIN6, INPUT_PULLUP);
+  
   // find i2c address based on adress select pin states
   int address = 0;
   if (!digitalRead(ADR_PIN1)) {
