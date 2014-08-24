@@ -89,7 +89,6 @@ void loop() {
 #ifdef SERIAL_DEBUG
         Serial.println("Button pressed");
 #endif
-        resultState = true;
         
         // assign the strip a new random color from the available colors on each keypress
         switch(random(10)) {
@@ -138,6 +137,9 @@ void loop() {
               strip.setPixelColor(j, color);
             } else {
               strip.setPixelColor(j, 0, 0, 0);
+            }
+            if (i == j) {
+              resultState = true;
             }
           }
           // push newly lighted pixel to the strip and wait some before doing next pixel
