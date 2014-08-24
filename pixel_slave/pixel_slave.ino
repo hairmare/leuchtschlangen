@@ -11,7 +11,7 @@
 #define ADR_PIN5 8
 #define ADR_PIN6 9
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(7, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(149, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 boolean resultState = false;         // the current state
 int buttonState;             // the current reading from the input pin
@@ -20,9 +20,12 @@ long lastDebounceTime = 0;  // the last time the output pin was toggled
 long debounceDelay = 50;    // the debounce time; increase if the output flickers
 
 uint32_t color;
+uint16_t activePixels = 0;
 
 void setup() {
+  //Serial.begin(9600);
   strip.begin();
+  strip.setBrightness(64);
   
   // activate internal pull up resitors on all button and address select pins
   pinMode(BUTTON_PIN, INPUT_PULLUP);
@@ -79,19 +82,74 @@ void loop() {
 
       // only toggle the resultState if the new button state is HIGH
       if (buttonState == LOW) {
+        //Serial.println("Button pressed");
         resultState = true;
+        
         color = strip.Color(random(255), random(255), random(255));
+        
+        switch(random(8)) {
+          case 1:
+            color = strip.Color(255, 0, 0);
+          break;
+          case 2:
+            // reddish green
+            color = strip.Color(16, 255, 0);
+          break;
+          case 3:
+            // nicely tuned blue
+            color = strip.Color(0, 32, 255);
+          break;
+          case 4:
+            color = strip.Color(128, 4, 128);
+          break;
+          case 5:
+            color = strip.Color(0, 200, 180);
+          break;
+          case 7:
+            color = strip.Color(124, 74, 14);
+          break;
+          case 8:
+            color = strip.Color(255, 255, 0);
+          break;
+        }
+        //    color = strip.Color(255, 255, 0);
+        //color = strip.Color(110, 4, 255);
+        //Serial.print("color: ");
+        //Serial.println(color);
+       
+        // set all the pixels to the new color value on each change:
+        //Serial.println(strip.numPixels());
+        for(uint16_t i = 0; i < strip.numPixels(); i++) {
+          for(uint16_t j = 0; j < strip.numPixels(); j++) {
+            if (i > j) {
+              strip.setPixelColor(j, color);
+            } else {
+              strip.setPixelColor(j, 0, 0, 0);
+            }
+          }
+          strip.show();
+          delay(50);
+          if (digitalRead(BUTTON_PIN) == HIGH) {
+            i = strip.numPixels();
+          }
+        }
       } else {
+        for(uint16_t j = 0; j < strip.numPixels(); j++) {
+          //Serial.print(".");
+          strip.setPixelColor(j, 0, 0, 0);
+          //Serial.print("color (inner): ");
+          //Serial.println(color);
+        }
+        strip.show();
         resultState = false;
       }
-      // set all the pixels to the new color value on each change:
-      for(uint16_t j=0; j < strip.numPixels(); j++) {
-        
-        strip.setPixelColor(j, color);
-        strip.show();
-      }
+      //Serial.print("\n");
     }
   }
+  if (resultState == true) {
+  } else {
+  }
+    
 
   // save the reading.  Next time through the loop,
   // it'll be the lastButtonState:
