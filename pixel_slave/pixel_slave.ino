@@ -11,7 +11,7 @@
 #define ADR_PIN5 8
 #define ADR_PIN6 9
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(149, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(150, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 boolean resultState = false;         // the current state
 int buttonState;             // the current reading from the input pin
@@ -87,7 +87,7 @@ void loop() {
         
         color = strip.Color(random(255), random(255), random(255));
         
-        switch(random(8)) {
+        switch(random(10)) {
           case 1:
             color = strip.Color(255, 0, 0);
           break;
@@ -111,6 +111,12 @@ void loop() {
           case 8:
             color = strip.Color(255, 255, 0);
           break;
+          case 9:
+            color = strip.Color(255, 128, 0);
+          break;
+          case 10:
+            color = strip.Color(102, 0, 0);
+          break;
         }
         //    color = strip.Color(255, 255, 0);
         //color = strip.Color(110, 4, 255);
@@ -120,7 +126,7 @@ void loop() {
         // set all the pixels to the new color value on each change:
         //Serial.println(strip.numPixels());
         for(uint16_t i = 0; i < strip.numPixels(); i++) {
-          for(uint16_t j = 0; j < strip.numPixels(); j++) {
+          for(uint16_t j = i-1; j < strip.numPixels(); j++) {
             if (i > j) {
               strip.setPixelColor(j, color);
             } else {
@@ -128,7 +134,7 @@ void loop() {
             }
           }
           strip.show();
-          delay(50);
+          delay(22);
           if (digitalRead(BUTTON_PIN) == HIGH) {
             i = strip.numPixels();
           }
