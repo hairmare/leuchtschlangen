@@ -158,16 +158,19 @@ void loop() {
           // @todo debounce this digitalRead (no high prio but still not very nice
           if (digitalRead(BUTTON_PIN) == HIGH) {
             i = strip.numPixels();
+            resultState = false;
           } else {
             delay(22);
           }
         }
       } else {
+        resultState = false;
+      }
+      if (resultState == false) {
         for(uint16_t j = 0; j < strip.numPixels(); j++) {
           strip.setPixelColor(j, 0, 0, 0);
         }
         strip.show();
-        resultState = false;
       }
 #ifdef SERIAL_DEBUG
       Serial.print("\n");
