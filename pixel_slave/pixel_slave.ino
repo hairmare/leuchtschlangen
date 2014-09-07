@@ -40,6 +40,9 @@ void setup() {
   pinMode(ADR_PIN5, INPUT_PULLUP);
   pinMode(ADR_PIN6, INPUT_PULLUP);
   
+  // wait for pins to settle
+  delay(22);
+  
   // find i2c address based on adress select pin states
   int address = 0;
   if (!digitalRead(ADR_PIN1)) {
@@ -61,6 +64,13 @@ void setup() {
     address += 32;
   }
   // join i2c
+  
+  // join i2c using calculated address
+#ifdef SERIAL_DEBUG
+  Serial.print("Joining i2c as ");
+  Serial.print(address, HEX);
+  Serial.print("\n");
+#endif
   Wire.begin(address);
   // register event callback for i2c requests
   Wire.onRequest(requestEvent);
@@ -152,10 +162,6 @@ void loop() {
         }
       } else {
         for(uint16_t j = 0; j < strip.numPixels(); j++) {
-#ifdef SERIAL_DEBUG
-          Serial.print("color (inner): ");
-          Serial.println(color);
-#endif
           strip.setPixelColor(j, 0, 0, 0);
         }
         strip.show();
