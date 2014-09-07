@@ -12,6 +12,12 @@ Contains the code running on the Raspberry Pi to trigger stuff when the slaves a
 * install python i2c libs ``sudo apt-get install python-smbus``
 * change address in ``master.py`` and run it to check if output is printed
 * set ``BLANK_TIME`` to ``0`` in ``/etc/kbd/config``
+* install git ``apt-get install git``
+* create a repos dir ``mkdir ~/git.repos`` and clone into ``cd ~/git.repos && git clone https://github.com/hairmare/leuchtschlangen.git``
+* install init script ``sudo cp ~/git.repos/leuchtschlangen/pixel_master/pixel.init /etc/init.d/pixel``
+* make runnable ``sudo chmod 755 /etc/init.d/pixel``
+* run ``sudo /etc/init.d/pixel start``
+* run on boot ``sudo update-rc.d -f pixel defaults``
 
 ## Links
 
