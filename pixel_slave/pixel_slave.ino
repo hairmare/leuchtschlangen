@@ -182,5 +182,9 @@ void loop() {
  * handle i2c request event by sending current state as boolean
  */
 void requestEvent() {
-  Wire.write(resultState);
+  if (resultState) {
+    Wire.write(0x01);
+  } else {
+    Wire.write(0x00);
+  }
 }
