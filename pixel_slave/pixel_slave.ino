@@ -148,16 +148,18 @@ void loop() {
             } else {
               strip.setPixelColor(j, 0, 0, 0);
             }
-            if (i == j) {
+          }
+          
+          if (i == strip.numPixels()) {
               resultState = true;
-            }
           }
           // push newly lighted pixel to the strip and wait some before doing next pixel
           strip.show();
-          delay(22);
           // @todo debounce this digitalRead (no high prio but still not very nice
           if (digitalRead(BUTTON_PIN) == HIGH) {
             i = strip.numPixels();
+          } else {
+            delay(22);
           }
         }
       } else {
