@@ -11,6 +11,7 @@ Contains the code running on the Raspberry Pi to trigger stuff when the slaves a
 * test after reboot using ``i2cdetect -y 0``
 * install python i2c libs ``sudo apt-get install python-smbus``
 * change address in ``master.py`` and run it to check if output is printed
+* set ``BLANK_TIME`` to ``0`` in ``/etc/kbd/config``
 
 ## Links
 

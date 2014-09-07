@@ -1,12 +1,48 @@
-# simple example app, will be expanded to do work after PoC
+# scan the i2c bus and trigger a movie if all available
+# devices returned a non-zero value
 
 import smbus
 import time
-bus = smbus.SMBus(0)
+import os
+bus = smbus.SMBus(1)
 
-I2C_ADDRESS = 0x20
+# repaint the creen with an image to get rid fo the console
+os.system("sudo fbi -T 2 -d /dev/fb0 -noverbose -a /home/pi/black.jpg")
 
-bus.write_byte(I2C_ADDRESS,0xFF)
-value=bus.read_byte(I2C_ADDRESS)
+# main loop
+while True:
+    # re-init variable on each run
+    activeDevices = 0
+    devices = []
 
-print "%02X" % value
+    # detect available devices (we do this on each run since it is fast and allows
+    # reconfiguring without a reboot
+    for address in range(2, 255):
+        try:
+            bus.write_byte(address,0xFF)
+        except IOError:
+            "" # ignore non existant devices
+        else:
+            print "Detected slave on", address
+            devices += [address]
+    
+    print "Found", len(devices), "devices on the BUS"
+    
+    # check for device state
+    for address in devices:
+        try:
+            value = bus.read_byte(address)
+        except IOError:
+            "" 
+        else:
+            "" 
+        if (value > 0):
+            activeDevices += 1
+    
+    print "There where", activeDevices, "active devices"
+    
+    # trigger movie as applicable
+    if (activeDevices == len(devices)):
+        print "Triggering Movie"
+        os.system("omxplayer --vol 0 --amp 0 -b /home/pi/test-mpeg_512kb.mp4")
+
