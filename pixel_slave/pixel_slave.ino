@@ -13,13 +13,16 @@
 
 #define SERIAL_DEBUG 0
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(149, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(150, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 boolean resultState = false;         // the current state
+boolean abortState = true;
+boolean endedShow = false;
 int buttonState;             // the current reading from the input pin
 int lastButtonState = LOW;   // the previous reading from the input pin
 long lastDebounceTime = 0;  // the last time the output pin was toggled
 long debounceDelay = 50;    // the debounce time; increase if the output flickers
+long resultStateTime = 0;
 
 uint32_t color;
 uint16_t activePixels = 0;
@@ -63,7 +66,6 @@ void setup() {
   if (!digitalRead(ADR_PIN6)) {
     address += 32;
   }
-  // join i2c
   
   // join i2c using calculated address
 #ifdef SERIAL_DEBUG
@@ -99,6 +101,8 @@ void loop() {
 #ifdef SERIAL_DEBUG
         Serial.println("Button pressed");
 #endif
+        abortState = true;
+        endedShow = false;
         
         // assign the strip a new random color from the available colors on each keypress
         switch(random(10)) {
@@ -139,9 +143,9 @@ void loop() {
 
         // set all the pixels to the new color value on each change:
         // this first for loops through the available pixel so we can turn them on one at a time
-        for(uint16_t i = 0; i < strip.numPixels(); i++) {
+        for(uint16_t i = 0; i <= strip.numPixels(); i++) {
           // the second loop is used for toggling all pixel on/off
-          for(uint16_t j = i-1; j < strip.numPixels(); j++) {
+          for(uint16_t j = i-1; j <= strip.numPixels(); j++) {
             // we only toogle pixels on thathave been reached in the outer loop
             if (i >= j) {
               strip.setPixelColor(j, color);
@@ -151,22 +155,27 @@ void loop() {
           }
           
           if (i == strip.numPixels()) {
-              resultState = true;
+              resultState = true;          
+              resultStateTime = millis();
+#ifdef SERIAL_DEBUG
+        Serial.println("setting resultState");
+#endif
           }
           // push newly lighted pixel to the strip and wait some before doing next pixel
           strip.show();
           // @todo debounce this digitalRead (no high prio but still not very nice
           if (digitalRead(BUTTON_PIN) == HIGH) {
             i = strip.numPixels();
-            resultState = false;
+            abortState = false;
           } else {
             delay(22);
           }
         }
       } else {
         resultState = false;
+        abortState == false;
       }
-      if (resultState == false) {
+      if (abortState == false) {
         for(uint16_t j = 0; j < strip.numPixels(); j++) {
           strip.setPixelColor(j, 0, 0, 0);
         }
@@ -177,6 +186,25 @@ void loop() {
 #endif
     }
   }
+#ifdef SERIAL_DEBUG
+    // Serial.print(resultStateTime);
+    // Serial.print(" ");
+    // Serial.print(millis());
+    // Serial.print("\n");
+#endif
+  if (!endedShow && resultStateTime + 10000 < millis()) {
+#ifdef SERIAL_DEBUG
+    Serial.println("Ending show");
+#endif
+    for(uint16_t j = 0; j < strip.numPixels(); j++) {
+      strip.setPixelColor(j, 0, 0, 0);
+    }
+    strip.show();
+    endedShow = true;
+  }
+#ifdef SERIAL_DEBUG
+  // Serial.print(".");
+#endif
 
   // save the reading.  Next time through the loop,
   // it'll be the lastButtonState:
