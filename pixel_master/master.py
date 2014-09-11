@@ -7,42 +7,48 @@ import os
 bus = smbus.SMBus(1)
 
 # repaint the creen with an image to get rid fo the console
-os.system("sudo fbi -T 2 -d /dev/fb0 -noverbose -a /home/pi/black.jpg")
+#os.system("sudo fbi -T 2 -d /dev/fb0 -noverbose -a /home/pi/black.jpg")
 
-# main loop
-while True:
+devices = [4, 8]
+devices = [4]
+
+# method to reset all devices to off
+def disableDevices():
+    for device in devices:
+        print "Sending" ,[0, 0, 0], "to", device
+        bus.write_i2c_block_data(device,0,[0, 0, 0])
+
+# set a given device to a color
+def setColor(device, color):
+    bus.write_i2c_block_data(device, 0, color)
+
+# set up some decent colors upon first run
+for device in devices:
+    setColor(device, [255, 255, 255])
+
+# main loop (detec whats going on)
+while False:
     # re-init variable on each run
     activeDevices = 0
-    devices = []
 
-    # detect available devices (we do this on each run since it is fast and allows
-    # reconfiguring without a reboot
-    for address in range(2, 255):
-        try:
-            bus.write_byte(address,0xFF)
-        except IOError:
-            "" # ignore non existant devices
-        else:
-            print "Detected slave on", address
-            devices += [address]
-    
-    print "Found", len(devices), "devices on the BUS"
-    
     # check for device state
     for address in devices:
+        value = 0
         try:
             value = bus.read_byte(address)
         except IOError:
-            "" 
+            ""
         else:
             "" 
         if (value > 0):
             activeDevices += 1
     
-    print "There where", activeDevices, "active devices"
+    if (activeDevices > 0):
+        print "There where", activeDevices, "active devices and I need", len(devices)
     
     # trigger movie as applicable
-    if (activeDevices == len(devices)):
+    if (activeDevices >= len(devices)-1):
         print "Triggering Movie"
-        os.system("omxplayer --vol 0 --amp 0 -b /home/pi/test-mpeg_512kb.mp4")
+        #os.system("omxplayer --vol 0 --amp 0 -b /home/pi/test-mpeg_512kb.mp4")
+        disableDevices()
 

@@ -11,7 +11,7 @@
 #define ADR_PIN5 8
 #define ADR_PIN6 9
 
-#define SERIAL_DEBUG 0
+#define SERIAL_DEBUG 1
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(150, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -25,6 +25,7 @@ long debounceDelay = 50;    // the debounce time; increase if the output flicker
 long resultStateTime = 0;
 
 uint32_t color;
+uint32_t initColor;
 uint16_t activePixels = 0;
 
 void setup() {
@@ -76,6 +77,40 @@ void setup() {
   Wire.begin(address);
   // register event callback for i2c requests
   Wire.onRequest(requestEvent);
+  Wire.onReceive(receiveEvent);
+  
+  // set up initial color
+  switch(random(10)) {
+    case 1:
+      initColor = strip.Color(255, 0, 0);
+    break;
+    case 2:
+      // reddish green
+      initColor = strip.Color(16, 255, 0);
+    break;
+    case 3:
+      // nicely tuned blue
+      initColor = strip.Color(0, 32, 255);
+    break;
+    case 4:
+      initColor = strip.Color(128, 4, 128);
+    break;
+    case 5:
+      initColor = strip.Color(0, 200, 180);
+    break;
+    case 7:
+      initColor = strip.Color(124, 74, 14);
+    break;
+    case 8:
+      initColor = strip.Color(255, 255, 0);
+    break;
+    case 9:
+      initColor = strip.Color(255, 128, 0);
+    break;
+    case 10:
+      initColor = strip.Color(102, 0, 0);
+    break;
+  }
 }
 
 void loop() {
@@ -104,37 +139,10 @@ void loop() {
         abortState = true;
         endedShow = false;
         
-        // assign the strip a new random color from the available colors on each keypress
-        switch(random(10)) {
-          case 1:
-            color = strip.Color(255, 0, 0);
-          break;
-          case 2:
-            // reddish green
-            color = strip.Color(16, 255, 0);
-          break;
-          case 3:
-            // nicely tuned blue
-            color = strip.Color(0, 32, 255);
-          break;
-          case 4:
-            color = strip.Color(128, 4, 128);
-          break;
-          case 5:
-            color = strip.Color(0, 200, 180);
-          break;
-          case 7:
-            color = strip.Color(124, 74, 14);
-          break;
-          case 8:
-            color = strip.Color(255, 255, 0);
-          break;
-          case 9:
-            color = strip.Color(255, 128, 0);
-          break;
-          case 10:
-            color = strip.Color(102, 0, 0);
-          break;
+        if (color != 0) {
+          initColor = color;
+        } else {
+          color = initColor;
         }
 #ifdef SERIAL_DEBUG
         Serial.print("color: ");
@@ -212,7 +220,7 @@ void loop() {
 }
 
 /**
- * handle i2c request event by sending current state as boolean
+ * handle i2c request event by sending 0 or 1 depending on state
  */
 void requestEvent() {
   if (resultState) {
@@ -221,3 +229,28 @@ void requestEvent() {
     Wire.write(0x00);
   }
 }
+
+void receiveEvent(int numBytes) {
+  // discard address byte
+  Wire.read();
+  // next 3 bytes must be color
+  color = strip.Color(Wire.read(), Wire.read(), Wire.read());
+  
+#ifdef SERIAL_DEBUG
+  Serial.println(color);
+#endif
+  while (0 < Wire.available()) {
+#ifdef SERIAL_DEBUG
+    Serial.println(":(");
+#endif
+    // get rid of any remaining bytes
+    Wire.read();
+  }
+}
+
+#ifdef SERIAL_DEBUG
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+void serialEvent() {
+  resetFunc();
+}
+#endif
