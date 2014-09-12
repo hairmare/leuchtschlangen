@@ -11,21 +11,25 @@
 #define ADR_PIN5 8
 #define ADR_PIN6 9
 
-#define SERIAL_DEBUG 1
+#define SERIAL_DEBUG 0
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(150, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(111, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 boolean resultState = false;         // the current state
 boolean abortState = true;
 boolean endedShow = false;
+boolean blockButton = false;
+boolean showAll = false;
+boolean hideAll = false;
 int buttonState;             // the current reading from the input pin
 int lastButtonState = LOW;   // the previous reading from the input pin
 long lastDebounceTime = 0;  // the last time the output pin was toggled
 long debounceDelay = 50;    // the debounce time; increase if the output flickers
 long resultStateTime = 0;
+int stripDelay = 22;
 
 uint32_t color;
-uint32_t initColor;
+uint32_t initColor = 0;
 uint16_t activePixels = 0;
 
 void setup() {
@@ -128,7 +132,7 @@ void loop() {
     // than the debounce delay, so take it as the actual current state:
 
     // if the button state has changed we do stuff
-    if (reading != buttonState) {
+    if (!blockButton && reading != buttonState) {
       buttonState = reading;
 
       // only toggle the resultState if the new button state is HIGH
@@ -176,22 +180,29 @@ void loop() {
             i = strip.numPixels();
             abortState = false;
           } else {
-            delay(22);
+            delay(stripDelay);
           }
         }
       } else {
-        resultState = false;
-        abortState == false;
+        //resultState = false;
+        //abortState == false;
       }
       if (abortState == false) {
         for(uint16_t j = 0; j < strip.numPixels(); j++) {
           strip.setPixelColor(j, 0, 0, 0);
         }
         strip.show();
+        resultState = false;
       }
 #ifdef SERIAL_DEBUG
       Serial.print("\n");
 #endif
+    }
+    
+    if (!blockButton && digitalRead(BUTTON_PIN) == HIGH) {
+      resultState = false;
+      abortState = false;
+      color = 0;
     }
   }
 #ifdef SERIAL_DEBUG
@@ -200,19 +211,45 @@ void loop() {
     // Serial.print(millis());
     // Serial.print("\n");
 #endif
-  if (!endedShow && resultStateTime + 10000 < millis()) {
+  if (color == 0 && !endedShow) {
 #ifdef SERIAL_DEBUG
     Serial.println("Ending show");
 #endif
     for(uint16_t j = 0; j < strip.numPixels(); j++) {
-      strip.setPixelColor(j, 0, 0, 0);
+      strip.setPixelColor(j, color);
     }
     strip.show();
+    color = initColor;
     endedShow = true;
   }
 #ifdef SERIAL_DEBUG
   // Serial.print(".");
 #endif
+  if (blockButton) {
+    resultState = false;
+  }
+  if (showAll) {
+#ifdef SERIAL_DEBUG
+    Serial.print("Showing all ");
+    Serial.print(initColor);
+    Serial.print("\n");
+#endif
+    for(uint16_t j = 0; j < strip.numPixels(); j++) {
+      strip.setPixelColor(j, initColor);
+    }
+    strip.show();
+    showAll = false;
+  }
+  if (hideAll) {
+#ifdef SERIAL_DEBUG
+    Serial.println("Hiding all");
+#endif
+    for(uint16_t j = 0; j < strip.numPixels(); j++) {
+      strip.setPixelColor(j, 0);
+    }
+    strip.show();
+    hideAll = false;
+  }
 
   // save the reading.  Next time through the loop,
   // it'll be the lastButtonState:
@@ -231,10 +268,25 @@ void requestEvent() {
 }
 
 void receiveEvent(int numBytes) {
-  // discard address byte
-  Wire.read();
-  // next 3 bytes must be color
-  color = strip.Color(Wire.read(), Wire.read(), Wire.read());
+  // get register byte
+  int i2cRegister = Wire.read();
+  if (i2cRegister == 0) {
+    // next 3 bytes must be color
+    color = strip.Color(Wire.read(), Wire.read(), Wire.read());
+    if (color > 0) {
+      initColor = color;
+    }
+  } else if (i2cRegister == 1) {
+    strip.setBrightness(Wire.read());
+  } else if (i2cRegister == 2) {
+    blockButton = Wire.read() == 1;
+  } else if (i2cRegister == 3) {
+    stripDelay = Wire.read();
+  } else if (i2cRegister == 4) {
+    showAll = true;
+  } else if (i2cRegister == 5) {
+    hideAll = true;
+  }
   
 #ifdef SERIAL_DEBUG
   Serial.println(color);
