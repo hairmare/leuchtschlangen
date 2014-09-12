@@ -20,11 +20,15 @@ deviceColors = {
   5: [255, 255, 0],
   6: [64, 0, 255],
   7: [0, 64, 255],
-  9: [0, 0, 255],
- 10: [0, 255, 255],
+  9: [0, 255, 255],
+ 10: [0, 0, 255],
  11: [0, 255, 0],
  13: [255, 64, 0]
 }
+# switch order after compiling corresponding sketch on intel rather than arm (LE vs BE issue)
+for device in devices:
+     newColor = [deviceColors[device][2], deviceColors[device][1], deviceColors[device][0]]
+     deviceColors[device] = newColor
 deviceBrightnesses = {
   4: 128,
   8: 128,
@@ -39,6 +43,8 @@ deviceBrightnesses = {
  11: 128,
  13: 128
 }
+#for device in devices:
+#    deviceBrightnesses[device] = 255
 deviceDelays = {
   4: 22,
   8: 22,
@@ -137,7 +143,7 @@ while True:
     
     # trigger movie as applicable
     #if (activeDevices >= len(devices)-2):
-    if (activeDevices >= 2):
+    if (activeDevices >= 3):
         print "Triggering Movie"
         setBlockBit(1)
         showAll()
