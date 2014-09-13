@@ -175,8 +175,8 @@ void loop() {
           }
           // push newly lighted pixel to the strip and wait some before doing next pixel
           strip.show();
-          // @todo debounce this digitalRead (no high prio but still not very nice
-          if (digitalRead(BUTTON_PIN) == HIGH) {
+          // @todo debounce this digitalRead (no high prio but still not very nice as is)
+          if (!blockButton && digitalRead(BUTTON_PIN) == HIGH) {
             i = strip.numPixels();
             abortState = false;
           } else {
